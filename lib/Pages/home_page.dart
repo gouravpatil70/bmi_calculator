@@ -1,6 +1,7 @@
+import 'package:bmi_calculator/Widgets/custom_snack_bar.dart';
 import 'package:bmi_calculator/Widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:bmi_calculator/Widgets/custom_alert_dialogBox.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -79,8 +80,6 @@ class _HomePageState extends State<HomePage> {
     String weight = weightEditingController.text;
     String heightInFt = heightInFeetEditingController.text;
 
-    // print(weight.isNotEmpty);
-
     if(weight.isNotEmpty && heightInFt.isNotEmpty){
 
       int intWeight = int.parse(weight);
@@ -93,6 +92,8 @@ class _HomePageState extends State<HomePage> {
 
       double bmiValue = intWeight/(totalMeter*totalMeter);   // Like : weight* height_in_meter^2
       String simpleResult;
+
+      // Simplifying BMI result
       if(bmiValue>25){
         simpleResult = 'Overweighted';
       }else if(bmiValue>18){
@@ -100,59 +101,13 @@ class _HomePageState extends State<HomePage> {
       }else{
         simpleResult = 'Underweighted';
       }
-      _showDialogBox(bmiValue,simpleResult);
-      
+      CustomDialogBox.showDialogBox(context, bmiValue, simpleResult);
     }else{
-      SnackBar snackBar =  SnackBar(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0)
-        ),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        margin: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-        behavior: SnackBarBehavior.floating,
-        
-        content: const Text(
-          'All Fields must be required',
-          style: TextStyle(
-            color: Colors.black,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      CustomSnackBar snackBarObject =  CustomSnackBar(snackBarContent: 'All fields must be required !!', snackBarBackgroundColor: Theme.of(context).colorScheme.inversePrimary);
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBarObject.showSnackBar());
     }
   }
 
-  _showDialogBox(double bmiValue, String simpleResult){
-    showDialog(
-      context: context, 
-      builder: (BuildContext context){
-        return AlertDialog(
-          title: Text("Your BMI value is : ${bmiValue.toStringAsFixed(2)} & you're $simpleResult"),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0)
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: (){
-                Navigator.of(context).pop();
-              }, 
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)
-                )
-              ),
-              child: const Text(
-                'Ok',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              )
-            )
-          ],
-        );
-      }
-    );
-  }
+  
 }
